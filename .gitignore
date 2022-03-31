@@ -1,0 +1,7 @@
+MathExpressionParsing/bin/
+MathExpressionParsing/obj/
+Tests/bin/
+Tests/obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/

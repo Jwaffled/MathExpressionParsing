@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathExpressionParsing", "MathExpressionParsing\MathExpressionParsing.csproj", "{CE3CA0A4-5D5F-45B4-824F-A3965798C51C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{56B9525C-6AAB-4274-970B-92FA88B0ED85}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE3CA0A4-5D5F-45B4-824F-A3965798C51C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE3CA0A4-5D5F-45B4-824F-A3965798C51C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE3CA0A4-5D5F-45B4-824F-A3965798C51C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE3CA0A4-5D5F-45B4-824F-A3965798C51C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56B9525C-6AAB-4274-970B-92FA88B0ED85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56B9525C-6AAB-4274-970B-92FA88B0ED85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56B9525C-6AAB-4274-970B-92FA88B0ED85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56B9525C-6AAB-4274-970B-92FA88B0ED85}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

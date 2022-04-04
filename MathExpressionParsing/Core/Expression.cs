@@ -8,6 +8,7 @@ public abstract class Expression
         T VisitBinaryExpression(ExpressionBinary expr);
         T VisitGroupingExpression(ExpressionGrouping expr);
         T VisitCallExpression(ExpressionCall expr);
+        T VisitUnaryExpression(ExpressionUnary expr);
     }
     public abstract T Accept<T>(IVisitor<T> visitor);
 }

@@ -1,4 +1,6 @@
-﻿namespace MathExpressionParsing.Core;
+﻿using MathExpressionParsing.Exceptions;
+
+namespace MathExpressionParsing.Core;
 
 public class Scanner
 {
@@ -88,6 +90,11 @@ public class Scanner
                 AddToken(TokenType.Carrot);
                 break;
             }
+            case '!':
+            {
+                AddToken(TokenType.Factorial);
+                break;
+            }
             case ' ':
             case '\t':
             case '\r':
@@ -109,7 +116,7 @@ public class Scanner
                 }
                 else
                 {
-                    throw new ScannerError(_line, $"Unexpected token.");
+                    throw new ScannerException(_line, $"Unexpected token.");
                 }
                 break;
             }
@@ -129,7 +136,7 @@ public class Scanner
         {
             if (hadDecimal && GetCurrent() == '.')
             {
-                throw new ScannerError(_line, "Numbers may only have one decimal point.");
+                throw new ScannerException(_line, "Numbers may only have one decimal point.");
             }
             Advance();
         }
@@ -166,14 +173,5 @@ public class Scanner
     private char Advance()
     {
         return this._input[_current++];
-    }
-
-    public class ScannerError : Exception
-    {
-        private int Line { get; }
-        public ScannerError(int line, string message) : base(message)
-        {
-            this.Line = line;
-        }
     }
 }

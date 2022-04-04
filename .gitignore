@@ -2,6 +2,7 @@ MathExpressionParsing/bin/
 MathExpressionParsing/obj/
 Tests/bin/
 Tests/obj/
+.idea/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/

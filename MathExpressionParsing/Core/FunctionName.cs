@@ -8,7 +8,7 @@ public class FunctionName : Attribute
     public FunctionName(string name, int argLength)
     {
         this.ArgumentLength = argLength;
-        this.Name = name;
+        this.Name = name.ToLower();
     }
 
     public FunctionName(string name)

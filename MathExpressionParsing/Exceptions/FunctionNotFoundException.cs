@@ -1,4 +1,4 @@
-﻿namespace MathExpressionParsing.Core;
+﻿namespace MathExpressionParsing.Exceptions;
 
 public class FunctionNotFoundException : Exception
 {

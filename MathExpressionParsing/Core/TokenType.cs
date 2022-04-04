@@ -13,6 +13,7 @@ public enum TokenType
     Star,
     Slash,
     Carrot,
+    Factorial,
     
     // Special cases
     Identifier,

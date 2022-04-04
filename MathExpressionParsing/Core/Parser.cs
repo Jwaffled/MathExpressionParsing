@@ -1,4 +1,7 @@
-﻿namespace MathExpressionParsing.Core;
+﻿using System.Runtime.InteropServices;
+using MathExpressionParsing.Exceptions;
+
+namespace MathExpressionParsing.Core;
 
 public class Parser
 {
@@ -22,15 +25,9 @@ public class Parser
         _tokens = tokens;
     }
 
-    public List<Expression> Parse()
+    public Expression Parse()
     {
-        var list = new List<Expression>();
-        while (!IsAtEnd())
-        {
-            list.Add(ParseExpression());
-        }
-
-        return list;
+        return ParseExpression();
     }
 
     private Expression ParseExpression()
@@ -68,16 +65,42 @@ public class Parser
 
     private Expression Power()
     {
-        var expr = Primary();
+        var expr = PostfixUnary();
 
         while (Match(TokenType.Carrot))
         {
             var op = Previous();
-            var right = Primary();
+            var right = PostfixUnary();
             expr = new ExpressionBinary(expr, op, right);
         }
 
         return expr;
+    }
+
+    private Expression PostfixUnary()
+    {
+        var expr = Unary();
+
+        while (Match(TokenType.Factorial))
+        {
+            var op = Previous();
+            expr = new ExpressionUnary(expr, op);
+        }
+
+        return expr;
+    }
+
+    private Expression Unary()
+    {
+        // TODO: make this work with factorials/postfix unary ops
+        while (Match(TokenType.Minus))
+        {
+            var op = Previous();
+            var expr = Unary();
+            return new ExpressionUnary(expr, op);
+        }
+
+        return Primary();
     }
 
     private Expression Primary()
@@ -93,10 +116,15 @@ public class Parser
 
         if (Match(TokenType.Identifier))
         {
-            return FinishCall(Previous().Lexeme);
+            if (Check(TokenType.LeftParen))
+            {
+                return FinishCall(Previous().Lexeme);
+            }
+
+            return MathConstant(Previous().Lexeme);
         }
 
-        throw new ParserError(GetCurrent(), $"Expected literal, got {GetCurrent()}");
+        throw new ParserException(GetCurrent(), $"Expected literal, got {GetCurrent()}");
     }
 
     private Expression FinishCall(string callName)
@@ -114,6 +142,18 @@ public class Parser
         var paren = ConsumeToken(TokenType.RightParen, "Expected ')' to end function call.");
 
         return new ExpressionCall(callName, paren, args);
+    }
+
+    private Expression MathConstant(string constName)
+    {
+        var constant = MathLibrary.FindConstant(constName);
+
+        if (constant is null)
+        {
+            throw new ConstantNotFoundException(constName, $"Constant '{constName}' does not exist.");
+        }
+
+        return new ExpressionLiteral(constant);
     }
 
     private bool Match(params TokenType[] tokenType)
@@ -161,20 +201,11 @@ public class Parser
     {
         if (Check(type)) return Advance();
 
-        throw new ParserError(GetCurrent(), message);
+        throw new ParserException(GetCurrent(), message);
     }
 
     private Token Previous()
     {
         return _tokens[_current - 1];
-    }
-
-    public class ParserError : Exception
-    {
-        public Token Token { get; }
-        public ParserError(Token token, string message) : base(message)
-        {
-            this.Token = token;
-        }
     }
 }

@@ -47,6 +47,27 @@ public class Interpreter : Expression.IVisitor<object?>
         return null;
     }
 
+    public object? VisitUnaryExpression(ExpressionUnary expr)
+    {
+        var right = Evaluate(expr.Right);
+
+        switch (expr.Operator.Type)
+        {
+            case TokenType.Factorial:
+            {
+                CheckOperandType(expr.Operator, right, typeof(double));
+                return MathLibrary.Factorial(Convert.ToInt32(right));
+            }
+            case TokenType.Minus:
+            {
+                CheckOperandType(expr.Operator, right, typeof(double));
+                return -(double) right;
+            }
+        }
+
+        return null;
+    }
+
     public object? VisitGroupingExpression(ExpressionGrouping expr)
     {
         return Evaluate(expr.Expression);
@@ -60,13 +81,25 @@ public class Interpreter : Expression.IVisitor<object?>
             args.Add(Evaluate(argument));
         }
 
-        return MathFunctions.FindAndInvoke(expr.FunctionName, args.Select(x => (double) x).ToArray());
+        return MathLibrary.FindAndInvoke(expr.FunctionName, args.Select(x => (double) x).ToArray());
     }
 
     private void CheckNumberOperands(Token op, object? left, object? right)
     {
         if (left is double && right is double) return;
         throw new RuntimeError(op, "Operands must be numbers.");
+    }
+
+    private void CheckNumberOperand(Token op, object? operand)
+    {
+        if (operand is double) return;
+        throw new RuntimeError(op, "Operand must be a number.");
+    }
+
+    private void CheckOperandType(Token op, object? operand, Type type)
+    {
+        if (operand?.GetType() == type) return;
+        throw new RuntimeError(op, $"Operand must be of type '{type.Name}'");
     }
 
     public object? Evaluate(Expression expr)

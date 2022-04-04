@@ -1,4 +1,5 @@
 ﻿using MathExpressionParsing.Core;
+using MathExpressionParsing.Exceptions;
 
 namespace MathExpressionParsing.Input;
 
@@ -16,30 +17,42 @@ public static class UserInput
             try
             {
                 var tokens = scanner.ScanTokens();
-                // foreach (var token in tokens)
-                // {
-                //     Console.WriteLine(token);
-                // }
-                var parser = new Parser(tokens);
-                var expressions = parser.Parse();
-
-                foreach (var expr in expressions)
+                if (Settings.DebugMode)
                 {
-                    Console.WriteLine(interpreter.Evaluate(expr));
+                    foreach (var token in tokens)
+                    {
+                        Console.WriteLine(token);
+                    }
                 }
+                var parser = new Parser(tokens);
+                var expression = parser.Parse();
+                
+                Console.WriteLine(interpreter.Evaluate(expression));
+                // foreach (var expr in expressions)
+                // {
+                //     Console.WriteLine(interpreter.Evaluate(expr));
+                // }
             }
             catch (Exception ex)
             {
+                if (Settings.DebugMode)
+                {
+                    Console.Error.WriteLine($"[DEBUG]: An error occurred: {ex}");
+                    return;
+                }
                 switch (ex)
                 {
-                    case Scanner.ScannerError:
+                    case ScannerException:
                         Console.WriteLine($"Error when scanning tokens: {ex.Message}");
                         break;
-                    case Parser.ParserError:
+                    case ParserException:
                         Console.WriteLine($"Error when parsing tokens: {ex.Message}");
                         break;
                     case FunctionNotFoundException:
                         Console.WriteLine($"Error when running function call: {ex.Message}");
+                        break;
+                    case ConstantNotFoundException:
+                        Console.WriteLine($"Error when resolving constant: {ex.Message}");
                         break;
                     default:
                         Console.WriteLine($"An unknown error occurred: {ex.Message}");

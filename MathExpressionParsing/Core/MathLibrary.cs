@@ -1,10 +1,18 @@
 ﻿using System.Reflection;
+using MathExpressionParsing.Exceptions;
 
 namespace MathExpressionParsing.Core;
 
-public static class MathFunctions
+public static class MathLibrary
 {
-    private static MethodInfo[] methods = typeof(MathFunctions).GetMethods();
+    private static readonly MethodInfo[] Methods = typeof(MathLibrary).GetMethods();
+    private static readonly FieldInfo[] Properties = typeof(MathLibrary).GetFields(BindingFlags.NonPublic | BindingFlags.Static);
+
+    [MathConstant("pi")] 
+    private const double Pi = Math.PI;
+
+    [MathConstant("e")] 
+    private const double E = Math.E;
     
     [FunctionName("sin", 1)]
     public static double Sine(double radians)
@@ -21,22 +29,6 @@ public static class MathFunctions
     [FunctionName("tan", 1)]
     public static double Tangent(double radians)
     {
-        switch (radians)
-        {
-            case Math.PI / 6:
-            case Math.PI * 7 / 6: return 1 / Math.Sqrt(3);
-            
-            case Math.PI / 4:
-            case Math.PI * 5 / 4: return 1;
-            
-            case Math.PI / 3:
-            case Math.PI * 4 / 3: return Math.Sqrt(3);
-            
-            case Math.PI / 2:
-            case Math.PI * 3 / 2: return double.NaN;
-            
-            // more
-        }
         return Math.Tan(radians);
     }
 
@@ -50,6 +42,21 @@ public static class MathFunctions
         }
 
         return sum;
+    }
+
+    [FunctionName("factorial", 1)]
+    public static double Factorial(int n)
+    {
+        if (n <= 0)
+        {
+            return Double.NaN;
+        }
+        if (n == 1)
+        {
+            return 1;
+        }
+        
+        return n * Factorial(n - 1);
     }
 
     // I mean, it works I guess
@@ -76,12 +83,26 @@ public static class MathFunctions
         return (double) method.Invoke(null, operands.Select(x => (object) x).ToArray());
     }
 
+    public static double? FindConstant(string constName)
+    {
+        foreach (var prop in Properties)
+        {
+            var attrs = Attribute.GetCustomAttributes(prop);
+            if (attrs.Length > 0 && attrs[0] is MathConstant && ((MathConstant)attrs[0]).Name.Equals(constName.ToLower()))
+            {
+                return (double?) prop.GetValue(null);
+            }
+        }
+        
+        return null;
+    }
+
     private static (MethodInfo?, int?) FindFunction(string funcName)
     {
-        foreach (var method in methods)
+        foreach (var method in Methods)
         {
             var attrs = Attribute.GetCustomAttributes(method);
-            if (attrs.Length > 0 && attrs[0] is FunctionName && ((FunctionName)attrs[0]).Name.Equals(funcName))
+            if (attrs.Length > 0 && attrs[0] is FunctionName && ((FunctionName)attrs[0]).Name.Equals(funcName.ToLower()))
             {
                 return (method, ((FunctionName)attrs[0]).ArgumentLength);
             }
